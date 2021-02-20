@@ -1,16 +1,18 @@
 package app.onlysans.android.ui.main
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import app.onlysans.android.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
   companion object {
     fun newInstance() = MainFragment()
@@ -35,7 +37,7 @@ class MainFragment : Fragment() {
     handlerThread.start()
     handler = Handler(handlerThread.looper)
 
-    view!!.findViewById<TextView>(R.id.message)?.applyFont(
+    requireView().findViewById<TextView>(R.id.message)?.applyFont(
       handler = handler,
       fontOptions = FontOptions(familyName = "Cherry Cream Soda"),
       success = {
@@ -43,5 +45,4 @@ class MainFragment : Fragment() {
       }
     )
   }
-
 }
