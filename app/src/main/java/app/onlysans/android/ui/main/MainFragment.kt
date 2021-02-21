@@ -6,13 +6,14 @@ import android.os.HandlerThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import app.onlysans.android.R
 import app.onlysans.android.data.SortOrder
-import dagger.hilt.android.AndroidEntryPoint
 import app.onlysans.android.databinding.MainFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -35,8 +36,8 @@ class MainFragment : Fragment() {
     return _binding!!.root
   }
 
-  override fun onActivityCreated(savedInstanceState: Bundle?) {
-    super.onActivityCreated(savedInstanceState)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
     viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
     // TODO: Use the ViewModel
 
@@ -67,11 +68,15 @@ class MainFragment : Fragment() {
     viewLifecycleOwner.lifecycleScope.launch {
       when (val response = service.requestTypeface(TypefaceOptions(familyName))) {
         is TypefaceResponse.Success -> {
-          binding.message.text = "Abella Ipsum in ${response.request.familyName}"
+          val firstNames = resources.getStringArray(R.array.first_names)
+          binding.message.text = resources.getString(R.string.title, firstNames.random(), response.request.familyName)
           binding.message.typeface = response.typeface
+          binding.preview.typeface = response.typeface
+          binding.preview.isVisible = true
         }
         is TypefaceResponse.Failure -> {
           binding.message.text = "Failed, click to try again"
+          binding.preview.isVisible = false
         }
       }
     }

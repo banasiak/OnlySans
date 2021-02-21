@@ -1,3 +1,18 @@
 <resources>
   <string name="app_name">OnlySans</string>
+  <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta, diam ut congue sodales, tortor dolor ultrices arcu, nec vulputate ex nibh sed lorem. Ut elementum turpis quam. Integer interdum enim eu turpis blandit, sit amet elementum nunc pellentesque. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras egestas leo erat, quis pharetra turpis rutrum et. Vivamus scelerisque massa sit amet pharetra ullamcorper. Suspendisse potenti. Praesent ac tincidunt orci, id maximus ex. Curabitur eget sodales risus.</string>
+  <string name="title">%1s Ipsum in %2s</string>
+  <string name="loading">Loading…</string>
+  <string-array name="first_names">
+    <item>Lana</item>
+    <item>Abella</item>
+    <item>Riley</item>
+    <item>Eva</item>
+    <item>Brandi</item>
+    <item>Mia</item>
+    <item>Lena</item>
+    <item>Cory</item>
+    <item>Mini</item>
+    <item>Leolulu</item>
+  </string-array>
 </resources>
