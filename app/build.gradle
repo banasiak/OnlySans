@@ -12,6 +12,10 @@ android {
   compileSdkVersion 30
   buildToolsVersion "29.0.3"
 
+  buildFeatures {
+      viewBinding true
+  }
+
   defaultConfig {
     applicationId "app.onlysans.android"
     minSdkVersion 24
@@ -46,6 +50,7 @@ dependencies {
   implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
   implementation 'androidx.core:core-ktx:1.3.2'
   implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0'
+  implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0'
   implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0'
   implementation 'com.google.android.material:material:1.3.0'
   implementation 'com.jakewharton.timber:timber:4.7.1'
