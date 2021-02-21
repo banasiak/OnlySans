@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import app.onlysans.android.R
+import app.onlysans.android.data.SortOrder
 import dagger.hilt.android.AndroidEntryPoint
 import app.onlysans.android.databinding.MainFragmentBinding
 import kotlinx.coroutines.launch
@@ -45,7 +46,7 @@ class MainFragment : Fragment() {
     service = TypefaceService(requireContext(), handler)
 
     viewLifecycleOwner.lifecycleScope.launch {
-      val fonts = viewModel.getFontList()
+      val fonts = viewModel.getOnlySansFonts(SortOrder.TRENDING)
       if (fonts.isEmpty()) {
         binding.message.text = "Refractory period engaged. Try again later"
       } else {

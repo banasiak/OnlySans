@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(private val api: FontsApi) : ViewModel()
     return api.getAllFonts(sort).body()?.items ?: emptyList()
   }
 
-  private suspend fun getOnlySansFonts(sort: SortOrder): List<Font> {
+  suspend fun getOnlySansFonts(sort: SortOrder): List<Font> {
     return getFonts(sort).filter { it.category == "sans-serif" }
   }
 
