@@ -12,6 +12,10 @@ android {
   compileSdkVersion 30
   buildToolsVersion "29.0.3"
 
+  buildFeatures {
+      viewBinding true
+  }
+
   defaultConfig {
     applicationId "app.onlysans.android"
     minSdkVersion 24
