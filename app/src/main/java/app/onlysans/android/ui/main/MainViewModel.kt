@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.onlysans.android.api.FontsApi
 import app.onlysans.android.data.Font
+import app.onlysans.android.data.SortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -19,11 +20,15 @@ class MainViewModel @Inject constructor(private val api: FontsApi) : ViewModel()
     }
 
   init {
-    viewModelScope.launch { fonts = getFontList() }
+    viewModelScope.launch { fonts = getOnlySansFonts(sort = SortOrder.POPULARITY) }
   }
 
-  suspend fun getFontList(): List<Font> {
-    return api.getAllFonts().body()?.items ?: emptyList()
+  private suspend fun getFonts(sort: SortOrder): List<Font> {
+    return api.getAllFonts(sort).body()?.items ?: emptyList()
+  }
+
+  private suspend fun getOnlySansFonts(sort: SortOrder): List<Font> {
+    return getFonts(sort).filter { it.category == "sans-serif" }
   }
 
 }
