@@ -1,7 +1,8 @@
 package app.onlysans.android.api
 
 import app.onlysans.android.BuildConfig
-import app.onlysans.android.api.adapter.ZonedDateTimeAdapter
+import app.onlysans.android.api.adapter.EnumConverterFactory
+import app.onlysans.android.api.adapter.LocalDateAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -27,7 +28,7 @@ class ApiModule {
   fun provideMoshi(): Moshi {
     return Moshi.Builder()
       .add(KotlinJsonAdapterFactory())
-      .add(ZonedDateTimeAdapter())
+      .add(LocalDateAdapter())
       .build()
   }
 
@@ -57,6 +58,7 @@ class ApiModule {
       .baseUrl(FONTS_API_URL)
       .client(okHttpClient)
       .addConverterFactory(MoshiConverterFactory.create(moshi))
+      .addConverterFactory(EnumConverterFactory())
       .build()
   }
 
