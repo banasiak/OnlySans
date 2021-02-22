@@ -6,18 +6,22 @@ import android.os.HandlerThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import app.onlysans.android.R
+import app.onlysans.android.data.Font
 import app.onlysans.android.data.SortOrder
 import app.onlysans.android.databinding.MainFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
   companion object {
     fun newInstance() = MainFragment()
   }
@@ -27,6 +31,8 @@ class MainFragment : Fragment() {
   private lateinit var service: TypefaceService
   private var _binding: MainFragmentBinding? = null
   private val binding get() = _binding!!
+
+  private var fonts = listOf<Font>()
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -47,15 +53,15 @@ class MainFragment : Fragment() {
     service = TypefaceService(requireContext(), handler)
 
     viewLifecycleOwner.lifecycleScope.launch {
-      val fonts = viewModel.getOnlySansFonts(SortOrder.TRENDING)
-      if (fonts.isEmpty()) {
-        binding.message.text = "Refractory period engaged. Try again later"
-      } else {
-        load(fonts.random().family)
-        binding.message.setOnClickListener {
-          load(fonts.random().family)
-        }
-      }
+      fonts = viewModel.getOnlySansFonts(SortOrder.ALPHA)
+      val adapter = ArrayAdapter<Font>(
+        this@MainFragment.requireContext(),
+        R.layout.support_simple_spinner_dropdown_item
+      ).apply { addAll(fonts) }
+      binding.fonts.adapter = adapter
+      binding.fonts.isVisible = true
+      binding.fonts.onItemSelectedListener = this@MainFragment
+      binding.loading.isVisible = false
     }
   }
 
@@ -69,16 +75,28 @@ class MainFragment : Fragment() {
       when (val response = service.requestTypeface(TypefaceOptions(familyName))) {
         is TypefaceResponse.Success -> {
           val firstNames = resources.getStringArray(R.array.first_names)
-          binding.message.text = resources.getString(R.string.title, firstNames.random(), response.request.familyName)
-          binding.message.typeface = response.typeface
+          binding.title.text = resources.getString(R.string.title, firstNames.random(), response.request.familyName)
+          binding.title.typeface = response.typeface
+          binding.title.isVisible = true
           binding.preview.typeface = response.typeface
           binding.preview.isVisible = true
         }
         is TypefaceResponse.Failure -> {
-          binding.message.text = "Failed, click to try again"
+          Toast.makeText(this@MainFragment.requireContext(), "Failed to load font. Choose again.", Toast.LENGTH_LONG)
+            .show()
+          binding.title.isVisible = false
           binding.preview.isVisible = false
         }
       }
     }
+  }
+
+  override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    val selectedFont = fonts[position]
+    load(selectedFont.family)
+  }
+
+  override fun onNothingSelected(parent: AdapterView<*>?) {
+    // no-op
   }
 }

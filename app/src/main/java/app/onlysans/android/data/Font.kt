@@ -13,4 +13,8 @@ data class Font(
   val files: Map<String, String>,
   val category: String,
   val kind: String
-)
+) {
+  override fun toString(): String {
+    return family
+  }
+}
