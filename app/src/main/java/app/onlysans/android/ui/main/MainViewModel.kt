@@ -10,8 +10,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val api: FontsApi) : ViewModel() {
 
-  private var fonts: List<Font> = emptyList()
-
   private suspend fun getFonts(sort: SortOrder): List<Font> {
     return api.getAllFonts(sort).body()?.items ?: emptyList()
   }

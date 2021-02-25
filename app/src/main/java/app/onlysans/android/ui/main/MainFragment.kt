@@ -1,8 +1,6 @@
 package app.onlysans.android.ui.main
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,21 +15,26 @@ import app.onlysans.android.R
 import app.onlysans.android.data.Font
 import app.onlysans.android.data.SortOrder
 import app.onlysans.android.databinding.MainFragmentBinding
+import app.onlysans.android.typeface.TypefaceOptions
+import app.onlysans.android.typeface.TypefaceResponse
+import app.onlysans.android.typeface.TypefaceService
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
+
   companion object {
     fun newInstance() = MainFragment()
   }
 
-  private lateinit var viewModel: MainViewModel
-  private lateinit var handler: Handler
-  private lateinit var service: TypefaceService
-  private var _binding: MainFragmentBinding? = null
-  private val binding get() = _binding!!
+  @Inject lateinit var typefaceService: TypefaceService
 
+  private lateinit var viewModel: MainViewModel
+
+  private var _binding: MainFragmentBinding? = null
+  private val binding get() = requireNotNull(_binding)
   private var fonts = listOf<Font>()
 
   override fun onCreateView(
@@ -39,18 +42,13 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
     savedInstanceState: Bundle?
   ): View {
     _binding = MainFragmentBinding.inflate(inflater, container, false)
-    return _binding!!.root
+    return binding.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
     // TODO: Use the ViewModel
-
-    val handlerThread = HandlerThread("fonts")
-    handlerThread.start()
-    handler = Handler(handlerThread.looper)
-    service = TypefaceService(requireContext(), handler)
 
     viewLifecycleOwner.lifecycleScope.launch {
       fonts = viewModel.getOnlySansFonts(SortOrder.ALPHA)
@@ -72,7 +70,7 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
   private fun load(familyName: String) {
     viewLifecycleOwner.lifecycleScope.launch {
-      when (val response = service.requestTypeface(TypefaceOptions(familyName))) {
+      when (val response = typefaceService.requestTypeface(TypefaceOptions(familyName))) {
         is TypefaceResponse.Success -> {
           val firstNames = resources.getStringArray(R.array.first_names)
           binding.title.text = resources.getString(R.string.title, firstNames.random(), response.request.familyName)
