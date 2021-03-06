@@ -1,6 +1,6 @@
 package app.onlysans.android.data
 
-enum class SortOrder(val displayName: String ) {
+enum class SortOrder(val displayName: String) {
   ALPHA("Alphabetical"),
   DATE("Date"),
   POPULARITY("Popularity"),
