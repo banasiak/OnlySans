@@ -6,13 +6,13 @@ import java.time.LocalDate
 @JsonClass(generateAdapter = true)
 data class Font(
   val family: String,
-  val variants: List<String>,
-  val subsets: List<String>,
+  val variants: List<String> = emptyList(),
+  val subsets: List<String> = emptyList(),
   val version: String,
   val lastModified: LocalDate,
-  val files: Map<String, String>,
-  val category: String,
-  val kind: String
+  val files: Map<String, String> = emptyMap(),
+  val category: String = "",
+  val kind: String = ""
 ) {
   override fun toString(): String {
     return family
