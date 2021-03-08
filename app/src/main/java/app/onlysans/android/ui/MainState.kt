@@ -1,14 +1,14 @@
 package app.onlysans.android.ui
 
+import android.graphics.Typeface
 import androidx.annotation.StringRes
 import app.onlysans.android.R
 import app.onlysans.android.data.Font
 import app.onlysans.android.typeface.TypefaceOptions
-import app.onlysans.android.typeface.TypefaceWrapper
 
 data class MainState(
   val fonts: List<Font> = emptyList(),
-  val typeface: TypefaceWrapper = TypefaceWrapper(),
+  val typeface: Typeface = Typeface.DEFAULT,
   val selectedFont: Font? = null,
   val showLoading: Boolean = true,
   val showPreview: Boolean = false,
@@ -18,12 +18,11 @@ data class MainState(
 
 sealed class MainAction {
   data class FontSelected(val font: Font) : MainAction()
-  data class TypefaceLoaded(val typeface: TypefaceWrapper) : MainAction()
+  data class TypefaceLoaded(val typeface: Typeface?) : MainAction()
   object Load : MainAction()
 }
 
 sealed class MainEffect {
   data class LoadTypeface(val options: TypefaceOptions) : MainEffect()
   data class ShowToast(@StringRes val stringRes: Int) : MainEffect()
-  object None : MainEffect()
 }

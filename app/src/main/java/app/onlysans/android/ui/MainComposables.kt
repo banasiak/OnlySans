@@ -114,7 +114,6 @@ fun FontItem(font: Font) {
 @ExperimentalAnimationApi
 @Composable
 fun FontPreview(state: State<MainState>) {
-  val wrapper = state.value.typeface
   AnimatedVisibility(
     visible = state.value.showPreview,
     enter = fadeIn(),
@@ -131,7 +130,7 @@ fun FontPreview(state: State<MainState>) {
           requireNotNull(state.value.selectedFont).family
         ),
         fontSize = 32.sp,
-        fontFamily = FontFamily(requireNotNull(wrapper.typeface)),
+        fontFamily = FontFamily(state.value.typeface),
         maxLines = 2,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(bottom = 16.dp)
@@ -139,7 +138,7 @@ fun FontPreview(state: State<MainState>) {
       Text(
         text = stringResource(id = R.string.lorem_ipsum),
         fontSize = 20.sp,
-        fontFamily = FontFamily(requireNotNull(wrapper.typeface)),
+        fontFamily = FontFamily(state.value.typeface),
         modifier = Modifier.padding(top = 16.dp)
       )
     }

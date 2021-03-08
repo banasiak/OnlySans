@@ -1,5 +1,6 @@
 package app.onlysans.android.ui
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -12,12 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import app.onlysans.android.typeface.TypefaceOptions
 import app.onlysans.android.typeface.TypefaceResponse
 import app.onlysans.android.typeface.TypefaceService
-import app.onlysans.android.typeface.TypefaceWrapper
 import app.onlysans.android.ui.theme.OnlySansTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -60,15 +60,15 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private suspend fun loadTypeface(service: TypefaceService, options: TypefaceOptions): TypefaceWrapper {
+  private suspend fun loadTypeface(service: TypefaceService, options: TypefaceOptions): Typeface? {
     return when (val response = service.requestTypeface(options)) {
       is TypefaceResponse.Success -> {
         Timber.i("SUCCESS")
-        TypefaceWrapper(response.typeface)
+        response.typeface
       }
       is TypefaceResponse.Failure -> {
         Timber.e("FAILURE")
-        TypefaceWrapper()
+        null
       }
     }
   }
