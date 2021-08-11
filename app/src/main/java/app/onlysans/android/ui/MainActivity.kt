@@ -53,8 +53,6 @@ class MainActivity : AppCompatActivity() {
           is MainEffect.ShowToast -> {
             Toast.makeText(this@MainActivity, effect.stringRes, Toast.LENGTH_LONG).show()
           }
-          else -> { /* no-op */
-          }
         }
       }
     }
