@@ -1,5 +1,6 @@
 package app.onlysans.android.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.onlysans.android.R
@@ -16,41 +17,54 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val api: FontsApi) : ViewModel() {
+class MainViewModel @Inject constructor(
+  private val api: FontsApi,
+  private val savedStateHandle: SavedStateHandle,
+) : ViewModel() {
 
-  private val _state: MutableStateFlow<MainState> = MutableStateFlow(MainState())
-  val state: StateFlow<MainState> = _state
+  private val _stateFlow: MutableStateFlow<MainState> = MutableStateFlow(
+    savedStateHandle.get<MainState>(KEY_STATE) ?: MainState()
+  )
+  val stateFlow: StateFlow<MainState> = _stateFlow
 
-  private val _effect: MutableSharedFlow<MainEffect> = MutableSharedFlow(replay = 0)
-  val effect: SharedFlow<MainEffect> = _effect
+  private val _effectFlow: MutableSharedFlow<MainEffect> = MutableSharedFlow(replay = 0)
+  val effectFlow: SharedFlow<MainEffect> = _effectFlow
 
   fun postAction(action: MainAction) {
     viewModelScope.launch {
       when (action) {
         is MainAction.Load -> loadOnlySansFonts()
         is MainAction.FontSelected -> {
-          _state.value = state.value.copy(selectedFont = action.font)
-          _effect.emit(MainEffect.LoadTypeface(options = TypefaceOptions(familyName = action.font.family)))
+          updateState(stateFlow.value.copy(selectedFont = action.font))
+          _effectFlow.emit(MainEffect.LoadTypeface(options = TypefaceOptions(familyName = action.font.family)))
         }
         is MainAction.TypefaceLoaded -> {
           if (action.typeface == null) {
-            _state.value = state.value.copy(showPreview = false)
-            _effect.emit(MainEffect.ShowToast(R.string.load_failed))
+            updateState(stateFlow.value.copy(showPreview = false))
+            _effectFlow.emit(MainEffect.ShowToast(R.string.load_failed))
           } else {
-            _state.value = state.value.copy(typeface = action.typeface, showPreview = true)
+            updateState(stateFlow.value.copy(typeface = action.typeface, showPreview = true))
           }
         }
       }
     }
   }
 
+  private fun updateState(state: MainState) {
+    _stateFlow.value = state
+    savedStateHandle[KEY_STATE] = state
+  }
+
   private suspend fun loadOnlySansFonts() {
     val fonts = getFonts(SortOrder.ALPHA).filter { it.category == "sans-serif" }
-    _state.value = state.value.copy(fonts = fonts, showLoading = false)
+    updateState(stateFlow.value.copy(fonts = fonts, showLoading = false))
   }
 
   private suspend fun getFonts(sort: SortOrder): List<Font> {
     return api.getAllFonts(sort).body()?.items ?: emptyList()
   }
 
+  companion object {
+    private const val KEY_STATE = "main_state"
+  }
 }

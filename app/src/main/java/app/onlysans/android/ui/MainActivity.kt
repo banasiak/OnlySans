@@ -6,17 +6,18 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import app.onlysans.android.typeface.TypefaceOptions
 import app.onlysans.android.typeface.TypefaceResponse
 import app.onlysans.android.typeface.TypefaceService
 import app.onlysans.android.ui.theme.OnlySansTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -24,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
   @Inject lateinit var typefaceService: TypefaceService
 
-  @ExperimentalAnimationApi
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -32,26 +32,29 @@ class MainActivity : AppCompatActivity() {
 
     setContent {
       OnlySansTheme {
-        // A surface container using the 'background' color from the theme
         Surface(color = MaterialTheme.colors.background) {
-          Content(viewModel.state, viewModel::postAction)
+          MainScreen(viewModel)
         }
       }
     }
 
-    lifecycleScope.launchWhenCreated {
-      viewModel.postAction(MainAction.Load)
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+        viewModel.postAction(MainAction.Load)
+      }
     }
 
-    lifecycleScope.launchWhenResumed {
-      viewModel.effect.collect { effect ->
-        when (effect) {
-          is MainEffect.LoadTypeface -> {
-            val typeface = loadTypeface(typefaceService, effect.options)
-            viewModel.postAction(MainAction.TypefaceLoaded(typeface))
-          }
-          is MainEffect.ShowToast -> {
-            Toast.makeText(this@MainActivity, effect.stringRes, Toast.LENGTH_LONG).show()
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+        viewModel.effectFlow.collect { effect ->
+          when (effect) {
+            is MainEffect.LoadTypeface -> {
+              val typeface = loadTypeface(typefaceService, effect.options)
+              viewModel.postAction(MainAction.TypefaceLoaded(typeface))
+            }
+            is MainEffect.ShowToast -> {
+              Toast.makeText(this@MainActivity, effect.stringRes, Toast.LENGTH_LONG).show()
+            }
           }
         }
       }
