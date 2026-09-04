@@ -1,9 +1,9 @@
 package app.onlysans.android.data
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class FontsResponse(
-  val kind: String,
-  val items: List<Font>
+  val kind: String = "",
+  val items: List<Font> = emptyList()
 )
