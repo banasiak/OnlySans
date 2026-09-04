@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  "Aa" set in Archivo Black, extracted from the .ttf as outlines. Every glyph in this app comes
+  from Google Fonts; it would be odd if the icon did not.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+  android:width="108dp"
+  android:height="108dp"
+  android:viewportWidth="108"
+  android:viewportHeight="108"
+  >
+  <group
+    android:scaleX="0.036879"
+    android:scaleY="-0.036879"
+    android:translateX="27.6312"
+    android:translateY="66.4652"
+    >
+    <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M535.0 0.0 506.0 97.0H265.0L236.0 0.0H10.0L261.0 688.0H518.0L769.0 0.0ZM311.0 251.0H460.0L388.0 496.0H384.0ZM1352.0 368.0V162.0Q1352.0 145.0 1360.0 134.0Q1368.0 123.0 1384.0 123.0H1420.0V8.0Q1417.0 6.0 1404.5 1.5Q1392.0 -3.0 1369.0 -7.5Q1346.0 -12.0 1316.0 -12.0Q1258.0 -12.0 1220.5 5.5Q1183.0 23.0 1169.0 54.0Q1131.0 24.0 1084.0 6.0Q1037.0 -12.0 974.0 -12.0Q788.0 -12.0 788.0 136.0Q788.0 213.0 829.5 253.5Q871.0 294.0 949.0 309.0Q1027.0 324.0 1153.0 324.0V350.0Q1153.0 381.0 1131.5 397.0Q1110.0 413.0 1076.0 413.0Q1045.0 413.0 1022.5 402.0Q1000.0 391.0 1000.0 367.0V363.0H804.0Q803.0 368.0 803.0 377.0Q803.0 452.0 874.5 496.0Q946.0 540.0 1079.0 540.0Q1200.0 540.0 1276.0 499.5Q1352.0 459.0 1352.0 368.0ZM987.0 162.0Q987.0 112.0 1055.0 112.0Q1094.0 112.0 1123.5 133.0Q1153.0 154.0 1153.0 185.0V230.0Q1068.0 230.0 1027.5 211.5Q987.0 193.0 987.0 162.0Z"
+      />
+  </group>
+</vector>

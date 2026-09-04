@@ -1,31 +1,30 @@
 package app.onlysans.android.typeface
 
 import android.content.Context
-import android.os.Handler
-import android.os.HandlerThread
+import android.graphics.Typeface
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.io.File
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+/** Where downloaded `.ttf` files live. Under `cacheDir`, so the system can evict them. */
+@Qualifier @Retention(AnnotationRetention.BINARY) annotation class TypefaceCacheDir
 
 @Module
 @InstallIn(SingletonComponent::class)
-class TypefaceModule {
+object TypefaceModule {
+  private const val CACHE_DIR = "typefaces"
 
   @Singleton
   @Provides
-  fun provideTypefaceHandler(): Handler {
-    val thread = HandlerThread("fonts")
-    thread.start()
-    return Handler(thread.looper)
-  }
+  @TypefaceCacheDir
+  fun provideTypefaceCacheDir(@ApplicationContext context: Context): File = File(context.cacheDir, CACHE_DIR)
 
   @Singleton
   @Provides
-  fun provideTypefaceService(@ApplicationContext context: Context, handler: Handler): TypefaceService {
-    return TypefaceService(context, handler)
-  }
-
+  fun provideTypefaceParser(): TypefaceParser = TypefaceParser { file -> Typeface.createFromFile(file) }
 }

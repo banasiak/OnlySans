@@ -1,10 +1,69 @@
 <resources>
   <string name="app_name">OnlySans</string>
-  <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta, diam ut congue sodales, tortor dolor ultrices arcu, nec vulputate ex nibh sed lorem. Ut elementum turpis quam. Integer interdum enim eu turpis blandit, sit amet elementum nunc pellentesque. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras egestas leo erat, quis pharetra turpis rutrum et. Vivamus scelerisque massa sit amet pharetra ullamcorper. Suspendisse potenti. Praesent ac tincidunt orci, id maximus ex. Curabitur eget sodales risus.</string>
-  <string name="title">%1s Ipsum in %2s</string>
-  <string name="loading">Loading…</string>
-  <string name="select_font">Select Font</string>
-  <string name="load_failed">Failed to load font. Choose again.</string>
+
+  <!-- gallery -->
+  <string name="search">Search</string>
+  <string name="search_hint">Search fonts</string>
+  <string name="close_search">Close search</string>
+  <string name="clear_query">Clear</string>
+  <string name="favorites_only">Show favorites only</string>
+  <string name="more_options">More options</string>
+  <string name="sort_by">Sort by</string>
+  <string name="dynamic_color">Use wallpaper colors</string>
+  <string name="favorite">Add to favorites</string>
+  <string name="unfavorite">Remove from favorites</string>
+  <string name="retry">Try again</string>
+  <string name="back">Back</string>
+
+  <plurals name="font_count">
+    <item quantity="one">%1$d of %2$d font</item>
+    <item quantity="other">%1$d of %2$d fonts</item>
+  </plurals>
+
+  <plurals name="font_styles">
+    <item quantity="one">%1$d style</item>
+    <item quantity="other">%1$d styles</item>
+  </plurals>
+
+  <!-- categories -->
+  <string name="category_sans_serif">Sans</string>
+  <string name="category_serif">Serif</string>
+  <string name="category_display">Display</string>
+  <string name="category_handwriting">Handwriting</string>
+  <string name="category_monospace">Mono</string>
+
+  <!-- sort orders -->
+  <string name="sort_alpha">Alphabetical</string>
+  <string name="sort_trending">Trending</string>
+  <string name="sort_popularity">Popularity</string>
+  <string name="sort_date">Recently updated</string>
+  <string name="sort_style">Number of styles</string>
+
+  <!-- empty and error states -->
+  <string name="error_load">Couldn\'t reach Google Fonts. Check your connection and try again.</string>
+  <string name="error_no_api_key">No Google Fonts API key. Put <b>fontsApiKey=…</b> in local.properties and rebuild.</string>
+  <string name="empty_no_results">Nothing here matches “%1$s”.</string>
+  <string name="empty_no_categories">Every category is switched off. Turn one back on above.</string>
+  <string name="empty_no_favorites">No favorites yet. Tap a star to keep a font here.</string>
+  <string name="empty_missing_font">That font isn\'t in the catalog any more.</string>
+
+  <!-- specimen -->
+  <string name="specimen_sample">Sample text</string>
+  <string name="specimen_size">%1$d sp</string>
+  <string name="specimen_shuffle">Shuffle the sample</string>
+  <string name="meta_category">Category</string>
+  <string name="meta_styles">Styles</string>
+  <string name="meta_version">Version</string>
+  <string name="meta_updated">Updated</string>
+  <string name="meta_subsets">Subsets</string>
+
+  <!-- sample text -->
+  <string name="title">%1$s Ipsum</string>
+  <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta, diam ut congue sodales, tortor dolor ultrices arcu, nec vulputate ex nibh sed lorem. Ut elementum turpis quam. Integer interdum enim eu turpis blandit, sit amet elementum nunc pellentesque.</string>
+  <string name="pangram">Sphinx of black quartz, judge my vow. Pack my box with five dozen liquor jugs.</string>
+  <string name="alphabet">ABCDEFGHIJKLM\nNOPQRSTUVWXYZ\nabcdefghijklm\nnopqrstuvwxyz</string>
+  <string name="numerals">0123456789\n&amp; ? ! @ # $ % ^ * ( )\n„ “ ” ‘ ’ — – …</string>
+
   <string-array name="first_names">
     <item>Lana</item>
     <item>Abella</item>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+  <background android:drawable="@drawable/ic_launcher_background" />
+  <foreground android:drawable="@drawable/ic_launcher_foreground" />
+  <!--
+    The foreground is already a solid glyph on a transparent field, which is exactly what the
+    themed-icon pipeline wants: it takes the alpha and applies the wallpaper's own tint.
+  -->
+  <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
