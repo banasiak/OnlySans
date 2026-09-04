@@ -13,32 +13,27 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldBeNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.random.Random
 
 @ExtendWith(MainDispatcherRule::class)
 class SpecimenViewModelTests {
   private val repository: FontRepository = mockk()
   private val settings: SettingsStore = mockk(relaxed = true)
   private val typefaceLoader: TypefaceLoader = mockk()
-  private val random: Random = mockk()
 
   private val favorites = MutableStateFlow<Set<String>>(emptySet())
 
   private fun viewModel(family: String = "Roboto") =
-    SpecimenViewModel(repository, settings, typefaceLoader, random, SavedStateHandle(mapOf("family" to family)))
+    SpecimenViewModel(repository, settings, typefaceLoader, SavedStateHandle(mapOf("family" to family)))
 
   @BeforeEach
   fun beforeEach() {
     every { settings.favorites } returns favorites
-    every { settings.dynamicColors } returns flowOf(true)
-    every { random.nextInt(any()) } returns 3
     coEvery { repository.family("Roboto") } returns Fonts.roboto
     coEvery { typefaceLoader.load(any()) } answers { mockk<Typeface>() }
   }
@@ -144,13 +139,7 @@ class SpecimenViewModelTests {
 
       repeat(Sample.entries.size) { vm.postAction(SpecimenAction.TapShuffle) }
 
-      vm.stateFlow.value.sample shouldBeEqualTo Sample.TITLE
-    }
-
-  @Test
-  fun `the name filling the title comes from the injected source`() =
-    runTest {
-      viewModel().stateFlow.value.nameIndex shouldBeEqualTo 3
+      vm.stateFlow.value.sample shouldBeEqualTo Sample.WORDMARK
     }
 
   @Test

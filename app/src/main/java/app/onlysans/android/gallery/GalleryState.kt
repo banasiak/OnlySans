@@ -19,7 +19,8 @@ data class GalleryState(
   @IgnoredOnParcel val fonts: List<Font> = emptyList(),
   /**
    * Faces resolved so far, by family. Rows ask for their own as they scroll into view, so this
-   * fills in behind the reader rather than all at once.
+   * fills in behind the reader rather than all at once -- bounded, because a face pins a native
+   * allocation; see `GalleryViewModel.plusFace`.
    */
   @IgnoredOnParcel val typefaces: Map<String, Typeface> = emptyMap(),
   val categories: Set<FontCategory> = setOf(FontCategory.SANS_SERIF),
@@ -27,12 +28,17 @@ data class GalleryState(
   @param:StringRes val error: Int? = null,
   val favorites: Set<String> = emptySet(),
   val favoritesOnly: Boolean = false,
-  val loading: Boolean = true,
+  /**
+   * Not parcelled: it describes the fetch that produced [fonts], which is not parcelled either. Restored as
+   * `false` it would claim a finished load over an empty list, and the gallery would draw its empty state
+   * until the settings flow woke the reload -- an async file read later.
+   */
+  @IgnoredOnParcel val loading: Boolean = true,
   val query: String = "",
   val searching: Boolean = false,
   val sort: SortOrder = SortOrder.ALPHA,
-  /** How many families the catalog holds before filtering, for the "N of M" line. */
-  val totalCount: Int = 0
+  /** How many families the catalog holds before filtering, for the "N of M" line. Not parcelled, for [loading]'s reason. */
+  @IgnoredOnParcel val totalCount: Int = 0
 ) : Parcelable {
   val isEmpty: Boolean get() = !loading && error == null && fonts.isEmpty()
 

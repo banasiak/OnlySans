@@ -6,7 +6,7 @@ import org.amshove.kluent.shouldNotThrow
 import org.junit.jupiter.api.Test
 
 class ApiModuleTests {
-  private val module = ApiModule()
+  private val module = ApiModule
 
   @Test
   fun `the Json the app actually uses tolerates fields it does not model`() {

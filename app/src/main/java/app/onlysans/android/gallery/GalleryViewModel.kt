@@ -1,5 +1,6 @@
 package app.onlysans.android.gallery
 
+import android.graphics.Typeface
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -52,8 +53,8 @@ class GalleryViewModel @Inject constructor(
   /** The unfiltered catalog for the current ordering; [GalleryState.fonts] is what is left of it. */
   private var catalog: List<Font> = emptyList()
 
-  /** Families already handed to the loader, so a row that scrolls past twice downloads once. */
-  private val previewed = mutableSetOf<String>()
+  /** Families being fetched right now, so a row that recomposes does not queue the same face twice. */
+  private val inFlight = mutableSetOf<String>()
 
   init {
     viewModelScope.launch {
@@ -153,7 +154,12 @@ class GalleryViewModel @Inject constructor(
 
     val fonts =
       catalog.filter { font ->
-        font.categoryType in categories &&
+        val category = font.categoryType
+        // a category this build has never heard of matches no chip, so it passes rather than
+        // vanishing -- the same forward-compatibility ignoreUnknownKeys buys for a field the model
+        // does not map. Filtering it out would drop the family from the list while still counting
+        // it in the total.
+        (category == null || category in categories) &&
           (!state.favoritesOnly || font.family in favorites) &&
           (query.isEmpty() || font.family.contains(query, ignoreCase = true))
       }
@@ -162,17 +168,35 @@ class GalleryViewModel @Inject constructor(
   }
 
   private fun onPreviewRequested(font: Font) {
+    // gating on the state rather than on everything ever requested is what lets an evicted face be
+    // fetched again when its row scrolls back into view
+    if (font.family in state.typefaces) return
     val url = font.urlFor(font.defaultCut) ?: return
-    if (!previewed.add(font.family)) return
+    if (!inFlight.add(font.family)) return
 
     viewModelScope.launch {
       val typeface = typefaceLoader.load(url)
-      if (typeface == null) {
-        // let a later pass retry; a failed download is usually a dropped connection, not a bad font
-        previewed.remove(font.family)
-        return@launch
-      }
-      state = state.copy(typefaces = state.typefaces + (font.family to typeface))
+      // cleared either way: a failed download is usually a dropped connection rather than a bad
+      // font, so a later pass is allowed to retry it
+      inFlight.remove(font.family)
+      if (typeface != null) state = state.copy(typefaces = state.typefaces.plusFace(font.family, typeface))
     }
+  }
+
+  /**
+   * Adds a resolved face, dropping the least recently added once the map reaches
+   * [TypefaceLoader.MEMORY_ENTRIES]. The loader caps its own memory cache because faces are backed
+   * by native allocations the entry count does not reflect; holding every face ever drawn here as
+   * well would pin the very allocations that cap exists to release, and leave the copy below
+   * growing with the catalog rather than with the cap.
+   */
+  private fun Map<String, Typeface>.plusFace(family: String, typeface: Typeface): Map<String, Typeface> {
+    val faces = LinkedHashMap(this)
+    faces.remove(family) // re-inserting puts it last, so iteration order stays oldest-first
+    faces[family] = typeface
+    while (faces.size > TypefaceLoader.MEMORY_ENTRIES) {
+      faces.remove(faces.keys.first())
+    }
+    return faces
   }
 }

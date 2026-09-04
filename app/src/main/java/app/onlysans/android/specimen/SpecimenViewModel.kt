@@ -14,18 +14,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class SpecimenViewModel @Inject constructor(
   private val repository: FontRepository,
   private val settings: SettingsStore,
   private val typefaceLoader: TypefaceLoader,
-  private val random: Random,
   private val savedState: SavedStateHandle
 ) : ViewModel() {
   private var state = savedState.restore() ?: SpecimenState(family = savedState[FAMILY] ?: "")
@@ -47,12 +44,8 @@ class SpecimenViewModel @Inject constructor(
   val effectFlow = _effectFlow.asSharedFlow()
 
   init {
-    state = state.copy(nameIndex = random.nextInt(NAME_COUNT))
-
     viewModelScope.launch {
-      combine(settings.favorites, settings.dynamicColors) { favorites, dynamicColors ->
-        state.copy(favorite = state.family in favorites, dynamicColors = dynamicColors)
-      }.collect { state = it }
+      settings.favorites.collect { favorites -> state = state.copy(favorite = state.family in favorites) }
     }
 
     viewModelScope.launch { loadFont() }
@@ -102,13 +95,10 @@ class SpecimenViewModel @Inject constructor(
 
   private fun onShuffle() {
     // shuffling drops an edited sample on purpose: the button is the way back to the stock ones
-    state = state.copy(sample = state.sample.next(), customText = null, nameIndex = random.nextInt(NAME_COUNT))
+    state = state.copy(sample = state.sample.next(), customText = null)
   }
 
   private companion object {
     const val FAMILY = "family"
-
-    /** Size of the `first_names` array. Asserted against the resource by SpecimenViewModelTests. */
-    const val NAME_COUNT = 10
   }
 }

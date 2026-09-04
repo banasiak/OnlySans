@@ -6,22 +6,34 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.onlysans.android.data.SettingsStore
 import app.onlysans.android.gallery.GalleryScreen
 import app.onlysans.android.specimen.SpecimenScreen
+import app.onlysans.android.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+  @Inject lateinit var settings: SettingsStore
+
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
-    setContent { OnlySansApp() }
+    setContent {
+      // read once, above the NavHost, so both destinations inherit one colour scheme rather than
+      // each resolving its own from its own state
+      val dynamicColors by settings.dynamicColors.collectAsStateWithLifecycle(initialValue = true)
+      AppTheme(dynamicColor = dynamicColors) { OnlySansApp() }
+    }
   }
 }
 
