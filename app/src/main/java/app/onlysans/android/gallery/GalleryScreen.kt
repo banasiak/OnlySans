@@ -8,9 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -51,6 +55,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -83,18 +88,31 @@ fun GalleryScreen(viewModel: GalleryViewModel, onSpecimen: (String) -> Unit) {
 
 @Composable
 fun GalleryView(state: GalleryState, postAction: (GalleryAction) -> Unit = { }) {
-  AppTheme(dynamicColor = state.dynamicColors) {
-    Scaffold(topBar = { GalleryTopBar(state, postAction) }) { padding ->
-      Column(modifier = Modifier.padding(top = padding.calculateTopPadding())) {
-        CategoryChips(state.categories) { postAction(GalleryAction.TapCategory(it)) }
-        HorizontalDivider()
-        Box(modifier = Modifier.fillMaxSize()) {
-          when {
-            state.error != null -> ErrorMessage(state.error) { postAction(GalleryAction.Load) }
-            state.loading && state.fonts.isEmpty() -> CircularProgressIndicator(Modifier.align(Alignment.Center))
-            state.isEmpty -> EmptyMessage(state)
-            else -> FontList(state, padding, postAction)
-          }
+  Scaffold(
+    topBar = { GalleryTopBar(state, postAction) },
+    // the default systemBars leaves a display cutout uncovered, and in landscape it is the cutout
+    // that clips the end of a row
+    contentWindowInsets = WindowInsets.safeDrawing
+  ) { padding ->
+    val layoutDirection = LocalLayoutDirection.current
+    Column(
+      modifier =
+        Modifier.padding(
+          top = padding.calculateTopPadding(),
+          // dropping these puts the family name and its trailing star under a landscape navigation
+          // bar or cutout, where they are clipped and not reliably tappable
+          start = padding.calculateStartPadding(layoutDirection),
+          end = padding.calculateEndPadding(layoutDirection)
+        )
+    ) {
+      CategoryChips(state.categories) { postAction(GalleryAction.TapCategory(it)) }
+      HorizontalDivider()
+      Box(modifier = Modifier.fillMaxSize()) {
+        when {
+          state.error != null -> ErrorMessage(state.error) { postAction(GalleryAction.Load) }
+          state.loading && state.fonts.isEmpty() -> CircularProgressIndicator(Modifier.align(Alignment.Center))
+          state.isEmpty -> EmptyMessage(state)
+          else -> FontList(state, padding, postAction)
         }
       }
     }
@@ -346,5 +364,8 @@ private fun GalleryViewPreview() {
         category = "sans-serif"
       )
     )
-  GalleryView(GalleryState(fonts = fonts, loading = false, totalCount = 1955, favorites = setOf("Lato")))
+  // the theme lives at the NavHost root in the app, so a preview supplies its own
+  AppTheme {
+    GalleryView(GalleryState(fonts = fonts, loading = false, totalCount = 1955, favorites = setOf("Lato")))
+  }
 }

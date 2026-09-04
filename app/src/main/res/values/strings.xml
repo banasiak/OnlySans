@@ -58,22 +58,10 @@
   <string name="meta_subsets">Subsets</string>
 
   <!-- sample text -->
-  <string name="title">%1$s Ipsum</string>
+  <!-- the app's own name, set in whatever family the specimen is showing -->
+  <string name="sample_wordmark">OnlySans</string>
   <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta, diam ut congue sodales, tortor dolor ultrices arcu, nec vulputate ex nibh sed lorem. Ut elementum turpis quam. Integer interdum enim eu turpis blandit, sit amet elementum nunc pellentesque.</string>
   <string name="pangram">Sphinx of black quartz, judge my vow. Pack my box with five dozen liquor jugs.</string>
   <string name="alphabet">ABCDEFGHIJKLM\nNOPQRSTUVWXYZ\nabcdefghijklm\nnopqrstuvwxyz</string>
   <string name="numerals">0123456789\n&amp; ? ! @ # $ % ^ * ( )\n„ “ ” ‘ ’ — – …</string>
-
-  <string-array name="first_names">
-    <item>Lana</item>
-    <item>Abella</item>
-    <item>Riley</item>
-    <item>Eva</item>
-    <item>Brandi</item>
-    <item>Mia</item>
-    <item>Lena</item>
-    <item>Cory</item>
-    <item>Mini</item>
-    <item>Indigo</item>
-  </string-array>
 </resources>

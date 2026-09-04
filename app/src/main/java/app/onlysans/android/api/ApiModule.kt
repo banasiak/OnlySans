@@ -28,13 +28,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class ApiModule {
-  companion object {
-    private const val FONTS_API_URL = "https://www.googleapis.com"
-    private const val HTTP_CACHE_DIR = "http"
-    private const val HTTP_CACHE_BYTES = 16L * 1024 * 1024
-    private const val JSON_MEDIA_TYPE = "application/json"
-  }
+object ApiModule {
+  private const val FONTS_API_URL = "https://www.googleapis.com"
+  private const val HTTP_CACHE_DIR = "http"
+  private const val HTTP_CACHE_BYTES = 16L * 1024 * 1024
+  private const val JSON_MEDIA_TYPE = "application/json"
 
   @Singleton
   @Provides
@@ -68,7 +66,15 @@ class ApiModule {
         if (BuildConfig.DEBUG) {
           // HEADERS, not BODY: the body here is 1.4 MB of JSON on every launch
           val logger = HttpLoggingInterceptor.Logger { message -> Timber.tag("API").v(message) }
-          addInterceptor(HttpLoggingInterceptor(logger).apply { level = HttpLoggingInterceptor.Level.HEADERS })
+          addInterceptor(
+            HttpLoggingInterceptor(logger).apply {
+              level = HttpLoggingInterceptor.Level.HEADERS
+              // this interceptor sits below ApiKeyInterceptor, so the request line it logs carries
+              // ?key=<the developer key>. Logcat outlives the run that wrote it and ends up in bug
+              // reports and screen recordings, so the parameter is redacted rather than printed.
+              redactQueryParams("key")
+            }
+          )
         }
       }
       .addNetworkInterceptor(CacheRewriteInterceptor())

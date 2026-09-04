@@ -3,6 +3,7 @@ package app.onlysans.android.typeface
 import android.graphics.Typeface
 import androidx.collection.LruCache
 import app.onlysans.android.api.TypefaceClient
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -74,8 +75,18 @@ class TypefaceLoader @Inject constructor(
         inFlight.getOrPut(url) { scope.async { fetchThenForget(url) } }
       }
 
-    // a caller that goes away mid-download (a row scrolled off) must not fail the shared load
-    return runCatching { pending.await() }.getOrNull()
+    // the download runs in this loader's own scope, so a caller that goes away (a row scrolled off)
+    // never fails it. What is caught here is the download's own failure, which is a miss. A
+    // CancellationException is not that: it means *this* caller was cancelled, and swallowing it
+    // would return null into a coroutine that should already have stopped.
+    return try {
+      pending.await()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      Timber.w(e, "Typeface load failed: $url")
+      null
+    }
   }
 
   private suspend fun fetchThenForget(url: String): Typeface? =

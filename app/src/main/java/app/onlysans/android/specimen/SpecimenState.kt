@@ -19,14 +19,11 @@ data class SpecimenState(
   @IgnoredOnParcel val cuts: List<FontVariant> = emptyList(),
   /** The [FontVariant.key] on show. Kept as the key so the choice survives being restored. */
   val selectedCut: String? = null,
-  val sample: Sample = Sample.TITLE,
+  val sample: Sample = Sample.WORDMARK,
   /** What the reader typed over the sample, if anything. Null means [sample] still speaks. */
   val customText: String? = null,
-  /** Which of the `first_names` fills [R.string.title]. Re-rolled by every shuffle. */
-  val nameIndex: Int = 0,
   val textSize: Float = Dimen.SPECIMEN_SIZE_DEFAULT,
   val favorite: Boolean = false,
-  val dynamicColors: Boolean = true,
   val loading: Boolean = true,
   /** The family could not be found, which only happens if the catalog dropped it. */
   val missing: Boolean = false
@@ -36,16 +33,16 @@ data class SpecimenState(
   /** See [app.onlysans.android.gallery.GalleryState.toString]: [font] holds a map of long URLs. */
   override fun toString(): String =
     "SpecimenState(family='$family', font=${font?.family}, typeface=${typeface != null}, cuts=${cuts.size}, " +
-      "selectedCut=$selectedCut, sample=$sample, customText=${customText != null}, nameIndex=$nameIndex, " +
-      "textSize=$textSize, favorite=$favorite, dynamicColors=$dynamicColors, loading=$loading, missing=$missing)"
+      "selectedCut=$selectedCut, sample=$sample, customText=${customText != null}, " +
+      "textSize=$textSize, favorite=$favorite, loading=$loading, missing=$missing)"
 }
 
 /**
- * The stock passages a specimen sheet cycles through. [TITLE] is the one the original app shipped
- * with, and the reason this one is called what it is.
+ * The stock passages a specimen sheet cycles through. [WORDMARK] is the app's own name, which is
+ * the shortest thing on the list and the one that reads as a specimen rather than as filler.
  */
 enum class Sample(@param:StringRes val text: Int) {
-  TITLE(R.string.title),
+  WORDMARK(R.string.sample_wordmark),
   LOREM(R.string.lorem_ipsum),
   PANGRAM(R.string.pangram),
   ALPHABET(R.string.alphabet),

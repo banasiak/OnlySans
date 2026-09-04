@@ -35,7 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -69,47 +68,45 @@ fun SpecimenScreen(viewModel: SpecimenViewModel, onBack: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpecimenView(state: SpecimenState, postAction: (SpecimenAction) -> Unit = { }) {
-  AppTheme(dynamicColor = state.dynamicColors) {
-    Scaffold(
-      topBar = {
-        TopAppBar(
-          title = { Text(state.family, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-          navigationIcon = {
-            IconButton(onClick = { postAction(SpecimenAction.TapBack) }) {
-              Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
-            }
-          },
-          actions = {
-            IconButton(onClick = { postAction(SpecimenAction.TapShuffle) }) {
-              Icon(Icons.Filled.Casino, contentDescription = stringResource(R.string.specimen_shuffle))
-            }
-            IconButton(onClick = { postAction(SpecimenAction.TapFavorite) }) {
-              Icon(
-                imageVector = if (state.favorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                contentDescription = stringResource(if (state.favorite) R.string.unfavorite else R.string.favorite),
-                tint = if (state.favorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-              )
-            }
+  Scaffold(
+    topBar = {
+      TopAppBar(
+        title = { Text(state.family, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        navigationIcon = {
+          IconButton(onClick = { postAction(SpecimenAction.TapBack) }) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
           }
-        )
-      }
-    ) { padding ->
-      Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
-        when {
-          state.loading -> {
-            CircularProgressIndicator(modifier = Modifier.padding(top = Dimen.xlarge))
+        },
+        actions = {
+          IconButton(onClick = { postAction(SpecimenAction.TapShuffle) }) {
+            Icon(Icons.Filled.Casino, contentDescription = stringResource(R.string.specimen_shuffle))
           }
-          state.missing -> {
-            Text(
-              text = stringResource(R.string.empty_missing_font),
-              style = MaterialTheme.typography.bodyLarge,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.padding(Dimen.xlarge)
+          IconButton(onClick = { postAction(SpecimenAction.TapFavorite) }) {
+            Icon(
+              imageVector = if (state.favorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+              contentDescription = stringResource(if (state.favorite) R.string.unfavorite else R.string.favorite),
+              tint = if (state.favorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
             )
           }
-          else -> {
-            Specimen(state, postAction)
-          }
+        }
+      )
+    }
+  ) { padding ->
+    Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.TopCenter) {
+      when {
+        state.loading -> {
+          CircularProgressIndicator(modifier = Modifier.padding(top = Dimen.xlarge))
+        }
+        state.missing -> {
+          Text(
+            text = stringResource(R.string.empty_missing_font),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(Dimen.xlarge)
+          )
+        }
+        else -> {
+          Specimen(state, postAction)
         }
       }
     }
@@ -236,18 +233,9 @@ private fun MetadataRow(label: String, value: String) {
   }
 }
 
-/**
- * What the specimen actually draws: whatever was typed over the sample, or the stock passage.
- * [Sample.TITLE] is the joke the app is named for, so it takes a name from the array to fill in.
- */
+/** What the specimen actually draws: whatever was typed over the sample, or the stock passage. */
 @Composable
-private fun sampleText(state: SpecimenState): String {
-  val names = stringArrayResource(R.array.first_names)
-  return state.customText ?: when (state.sample) {
-    Sample.TITLE -> stringResource(R.string.title, names[state.nameIndex % names.size])
-    else -> stringResource(state.sample.text)
-  }
-}
+private fun sampleText(state: SpecimenState): String = state.customText ?: stringResource(state.sample.text)
 
 private const val SAMPLE_EDITOR_LINES = 4
 private const val HEADLINE_SIZE = 40
@@ -268,13 +256,16 @@ private fun SpecimenViewPreview() {
       files = mapOf("300" to "x", "regular" to "x", "700" to "x"),
       category = "sans-serif"
     )
-  SpecimenView(
-    SpecimenState(
-      family = font.family,
-      font = font,
-      cuts = font.cuts,
-      selectedCut = FontVariant.REGULAR,
-      loading = false
+  // the theme lives at the NavHost root in the app, so a preview supplies its own
+  AppTheme {
+    SpecimenView(
+      SpecimenState(
+        family = font.family,
+        font = font,
+        cuts = font.cuts,
+        selectedCut = FontVariant.REGULAR,
+        loading = false
+      )
     )
-  )
+  }
 }
