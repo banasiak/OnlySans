@@ -180,6 +180,20 @@ Retrofit + kotlinx.serialization. Two things are load-bearing and neither is obv
 - AGP 9 has Kotlin support built in — applying `org.jetbrains.kotlin.android` is an error. Version
   catalog at `gradle/libs.versions.toml`; annotation processing is KSP, never kapt.
 - The launcher icon is an adaptive icon with no raster fallback: `mipmap-anydpi/ic_launcher.xml` over
-  vector foreground and background drawables, with a `<monochrome>` layer for themed icons. The `Aa`
-  path data was extracted from Archivo Black with fontTools, so regenerating it means re-extracting
-  from the `.ttf` rather than editing the path by hand.
+  vector foreground and background drawables, and deliberately no `<monochrome>` layer. It tells
+  the same joke the name does: the OnlyFans mark with an `S` where its `F` goes, in the logo's own
+  two blues on white. Three things make that read as the mark rather than as two letters, and all
+  three are load-bearing — the O's counter is 0.29 of its outer radius, far tighter than any
+  typeface draws one; the S sits **over** the O in the deeper blue, so the overlap goes dark instead
+  of knocking out; and the S is slanted 20°, the angle the F leans at. So the O is a geometric
+  evenOdd donut rather than a glyph, and the `S` is Archivo Black **sheared**, because that family
+  has no italic and a VectorDrawable `<group>` can rotate, scale and translate but not skew. The
+  shear is therefore baked into the outline with fontTools and the path data is not the plain glyph:
+  re-extracting it from the `.ttf` means re-applying the shear, or the mark stands up straight.
+  Everything else follows from those three — the arithmetic is in the drawable's comment, including
+  why the O is radius 18 rather than 19.5.
+- There is **no themed icon**. Tinting flat throws away the two blues, and with them the overlap
+  that makes the mark a mark; a `<monochrome>` layer would have to be a second, weaker lockup with
+  the letters drawn apart. Without one, a launcher with themed icons on draws the colour icon
+  instead, which is the better of the two outcomes. `docs/icon.png`, which the README shows, is a
+  192px render of it.

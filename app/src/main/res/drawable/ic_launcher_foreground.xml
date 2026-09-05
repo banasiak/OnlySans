@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  "Aa" set in Archivo Black, extracted from the .ttf as outlines. Every glyph in this app comes
-  from Google Fonts; it would be odd if the icon did not.
+  The OnlyFans mark is a light O with a darker F laid over it, and three things make it that mark
+  rather than two letters. The O's counter is 0.29 of its outer radius, far tighter than any
+  typeface draws one. The second letter sits *over* the O in the deeper of the two blues, so the
+  overlap goes dark instead of knocking out. And that letter is slanted 20 degrees — its stem runs
+  from upper right to lower left, which is what gives the mark its lean. All three are kept here,
+  with an S in place of the F, because the name is the joke and the icon may as well be.
+
+  So the O is geometry, not type: an evenOdd donut, radius 18 with a 5.22 counter, centred on
+  43.58,54. The S is Archivo Black, which has no italic, so the 20 degrees is a shear about the
+  baseline applied to the outline itself with fontTools — a VectorDrawable <group> can rotate,
+  scale and translate but not skew, so it cannot be done at draw time. The path below is therefore
+  not the plain glyph: re-extracting it from the .ttf means re-applying the shear.
+
+  The shear costs size. It widens the glyph from 0.90 of its height to 1.05, and the lockup has to
+  fit the same safe zone, so the O came down from radius 19.5 to 18. What sets the S's position is
+  the counter: shearing forward swings the S's middle to the right and its lower bowl to the left,
+  and it is the bowl that closes in on the hole. At 0.05 of the radius right of the O's centre the
+  hole is still clean; at -0.05 it is not. Measured by rendering it, not by eye.
+
+  The pair is centred on 54,54 and its furthest point is 30.8 out, inside the 33 the adaptive-icon
+  safe zone allows. The colours are the logo's own two blues.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
   android:width="108dp"
@@ -9,15 +28,20 @@
   android:viewportWidth="108"
   android:viewportHeight="108"
   >
+  <path
+    android:fillColor="#FF00AEEF"
+    android:fillType="evenOdd"
+    android:pathData="M43.58,36.00a18.0,18.0 0 1 0 0,36.0a18.0,18.0 0 1 0 0,-36.0ZM43.58,48.78a5.22,5.22 0 1 0 0,10.44a5.22,5.22 0 1 0 0,-10.44Z"
+    />
   <group
-    android:scaleX="0.036879"
-    android:scaleY="-0.036879"
-    android:translateX="27.6312"
-    android:translateY="66.4652"
+    android:scaleX="0.050562"
+    android:scaleY="-0.050562"
+    android:translateX="39.068"
+    android:translateY="71.393"
     >
     <path
-      android:fillColor="#FFFFFFFF"
-      android:pathData="M535.0 0.0 506.0 97.0H265.0L236.0 0.0H10.0L261.0 688.0H518.0L769.0 0.0ZM311.0 251.0H460.0L388.0 496.0H384.0ZM1352.0 368.0V162.0Q1352.0 145.0 1360.0 134.0Q1368.0 123.0 1384.0 123.0H1420.0V8.0Q1417.0 6.0 1404.5 1.5Q1392.0 -3.0 1369.0 -7.5Q1346.0 -12.0 1316.0 -12.0Q1258.0 -12.0 1220.5 5.5Q1183.0 23.0 1169.0 54.0Q1131.0 24.0 1084.0 6.0Q1037.0 -12.0 974.0 -12.0Q788.0 -12.0 788.0 136.0Q788.0 213.0 829.5 253.5Q871.0 294.0 949.0 309.0Q1027.0 324.0 1153.0 324.0V350.0Q1153.0 381.0 1131.5 397.0Q1110.0 413.0 1076.0 413.0Q1045.0 413.0 1022.5 402.0Q1000.0 391.0 1000.0 367.0V363.0H804.0Q803.0 368.0 803.0 377.0Q803.0 452.0 874.5 496.0Q946.0 540.0 1079.0 540.0Q1200.0 540.0 1276.0 499.5Q1352.0 459.0 1352.0 368.0ZM987.0 162.0Q987.0 112.0 1055.0 112.0Q1094.0 112.0 1123.5 133.0Q1153.0 154.0 1153.0 185.0V230.0Q1068.0 230.0 1027.5 211.5Q987.0 193.0 987.0 162.0Z"
+      android:fillColor="#FF008CCF"
+      android:pathData="M844.6 488 840.2 476H633.2L634.7 480Q645.6 510 630.9 530.0Q616.2 550 571.2 550Q527.2 550 499.0 537.0Q470.7 524 463.8 505Q454.0 478 481.2 465.0Q508.5 452 574.4 438Q651.2 421 698.0 402.5Q744.8 384 769.5 342.0Q794.2 300 769.0 228Q724.6 106 620.6 47.0Q516.6 -12 378.6 -12Q217.6 -12 147.8 42.0Q77.9 96 127.8 233H336.8Q317.9 181 338.5 163.5Q359.1 146 416.1 146Q458.1 146 488.9 155.0Q519.7 164 529.9 192Q539.0 217 513.0 229.5Q487.1 242 423.2 256Q345.7 274 297.8 293.5Q249.9 313 225.3 358.0Q200.7 403 228.7 480Q269.8 593 376.8 646.5Q483.8 700 617.8 700Q749.8 700 815.3 646.5Q880.8 593 844.6 488Z"
       />
   </group>
 </vector>
