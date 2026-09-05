@@ -180,6 +180,18 @@ Retrofit + kotlinx.serialization. Two things are load-bearing and neither is obv
 - AGP 9 has Kotlin support built in — applying `org.jetbrains.kotlin.android` is an error. Version
   catalog at `gradle/libs.versions.toml`; annotation processing is KSP, never kapt.
 - The launcher icon is an adaptive icon with no raster fallback: `mipmap-anydpi/ic_launcher.xml` over
-  vector foreground and background drawables, with a `<monochrome>` layer for themed icons. The `Aa`
-  path data was extracted from Archivo Black with fontTools, so regenerating it means re-extracting
-  from the `.ttf` rather than editing the path by hand.
+  vector foreground and background drawables, and deliberately no `<monochrome>` layer. It tells
+  the same joke the name does, and does not explain it: a heavy `O` with an `S` laid over it, in two
+  blues on white. Two things make that read as one mark rather than as two letters, and both are
+  load-bearing — the O's counter is 0.29 of its outer radius, far tighter than any typeface draws
+  one, and the S sits **over** the O in the deeper blue, so the overlap goes dark instead of
+  knocking out. So the O is a geometric evenOdd donut rather than a glyph; the `S` is Archivo Black,
+  upright, and its path data is the plain glyph, so re-extracting it from the `.ttf` is enough. What
+  it is borrowed from leans; a leaning S reads as an italic rather than as a logo. The spacing is
+  fixed by the counter: the S is set just far enough right that its spine clears the hole at
+  mid-height. All of the arithmetic is in the drawable's comment.
+- There is **no themed icon**. Tinting flat throws away the two blues, and with them the overlap
+  that makes the mark a mark; a `<monochrome>` layer would have to be a second, weaker lockup with
+  the letters drawn apart. Without one, a launcher with themed icons on draws the colour icon
+  instead, which is the better of the two outcomes. `docs/icon.png`, which the README shows, is a
+  192px render of it.
