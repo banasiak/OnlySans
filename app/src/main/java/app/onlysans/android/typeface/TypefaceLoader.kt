@@ -7,12 +7,14 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -93,7 +95,10 @@ class TypefaceLoader @Inject constructor(
     try {
       fetch(url)
     } finally {
-      mutex.withLock { inFlight.remove(url) }
+      // NonCancellable because taking the mutex is itself a suspension point: cancelled here, the
+      // entry would never leave the map, and every later load of this URL would await a Deferred
+      // that is already dead and get null back for the life of the process
+      withContext(NonCancellable) { mutex.withLock { inFlight.remove(url) } }
     }
 
   private suspend fun fetch(url: String): Typeface? {
