@@ -44,6 +44,7 @@ import app.onlysans.android.R
 import app.onlysans.android.data.Font
 import app.onlysans.android.data.FontVariant
 import app.onlysans.android.ui.fontFamilyOf
+import app.onlysans.android.ui.sharedFamilyName
 import app.onlysans.android.ui.theme.AppTheme
 import app.onlysans.android.ui.theme.Dimen
 import java.time.LocalDate
@@ -130,7 +131,7 @@ private fun Specimen(state: SpecimenState, postAction: (SpecimenAction) -> Unit)
       text = state.family,
       fontFamily = family,
       fontSize = HEADLINE_SIZE.sp,
-      modifier = Modifier.padding(top = Dimen.small, bottom = Dimen.xsmall)
+      modifier = Modifier.padding(top = Dimen.small, bottom = Dimen.xsmall).sharedFamilyName(state.family)
     )
     Text(
       text = state.selectedVariant?.displayName.orEmpty(),

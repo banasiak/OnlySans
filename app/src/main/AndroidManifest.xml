@@ -5,10 +5,30 @@
 
   <uses-permission android:name="android.permission.INTERNET" />
 
+  <!--
+    Predictive back is opted out of, which for targetSdk 16+ means opting out of a platform default.
+
+    Declaring a shared element across the two destinations (the family name, which grows from a
+    gallery row into the specimen headline) keeps the outgoing screen's predictive-back preview
+    alive past the pop: the specimen shrinks, hangs over the restored gallery for ~150ms, then
+    disappears. Measured at ~500ms against ~317ms for button back.
+
+    Isolated to the shared element itself: SharedTransitionLayout alone is clean, and so is the
+    same NavHost with no sharedBounds declared. It is not the bounds spring, the content
+    enter/exit, or SharedContentConfig's permitTransformDuringDeferredTransition /
+    shouldKeepEnabledForOngoingAnimation. All four were tried; none of them reach it.
+
+    The documented pattern is the one used here (SharedTransitionLayout around NavHost, Navigation
+    2.10.0), and the docs list no known issue. The APIs aimed at this are new in the August '26
+    Compose release and still carry an open bug, b/342204665.
+
+    So this is a temporary measure, in the sense the docs use the word. Revisit with Navigation 3,
+    where predictive back is supported natively.
+  -->
   <application
     android:name=".App"
     android:allowBackup="true"
-    android:enableOnBackInvokedCallback="true"
+    android:enableOnBackInvokedCallback="false"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
     android:roundIcon="@mipmap/ic_launcher_round"
