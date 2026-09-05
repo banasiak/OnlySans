@@ -17,10 +17,12 @@ enum class FontCategory(val apiValue: String, @param:StringRes val label: Int) {
 
   companion object {
     private val byApiValue = entries.associateBy { it.apiValue }
+    private val byName = entries.associateBy { it.name }
 
     /** Null for a category this build has never heard of, which the gallery treats as unfiltered. */
     fun from(apiValue: String): FontCategory? = byApiValue[apiValue]
 
-    fun fromNames(names: Set<String>): Set<FontCategory> = names.mapNotNullTo(mutableSetOf()) { name -> entries.find { it.name == name } }
+    /** Names this build no longer has are dropped, so a category retired between releases is ignored. */
+    fun fromNames(names: Set<String>): Set<FontCategory> = names.mapNotNullTo(mutableSetOf()) { byName[it] }
   }
 }
