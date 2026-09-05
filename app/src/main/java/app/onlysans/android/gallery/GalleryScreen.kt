@@ -67,6 +67,7 @@ import app.onlysans.android.data.Font
 import app.onlysans.android.data.FontCategory
 import app.onlysans.android.data.SortOrder
 import app.onlysans.android.ui.fontFamilyOf
+import app.onlysans.android.ui.sharedFamilyName
 import app.onlysans.android.ui.theme.AppTheme
 import app.onlysans.android.ui.theme.Dimen
 import java.time.LocalDate
@@ -282,7 +283,8 @@ private fun FontRow(font: Font, typeface: Typeface?, favorite: Boolean, postActi
         fontSize = Dimen.galleryPreview,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha)
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
+        modifier = Modifier.sharedFamilyName(font.family)
       )
       Text(
         text = pluralStringResource(R.plurals.font_styles, font.cuts.size, font.cuts.size),
