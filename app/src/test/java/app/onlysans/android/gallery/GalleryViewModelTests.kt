@@ -217,7 +217,7 @@ class GalleryViewModelTests {
       coEvery { typefaceLoader.load(any()) } returns typeface
       val vm = viewModel()
 
-      vm.postAction(GalleryAction.PreviewRequested(Fonts.roboto))
+      vm.postAction(GalleryAction.PreviewRequested(listOf(Fonts.roboto)))
 
       vm.stateFlow.value.typefaces shouldBeEqualTo mapOf("Roboto" to typeface)
     }
@@ -228,7 +228,7 @@ class GalleryViewModelTests {
       coEvery { typefaceLoader.load(any()) } returns mockk<Typeface>()
       val vm = viewModel()
 
-      repeat(3) { vm.postAction(GalleryAction.PreviewRequested(Fonts.roboto)) }
+      repeat(3) { vm.postAction(GalleryAction.PreviewRequested(listOf(Fonts.roboto))) }
 
       coVerify(exactly = 1) { typefaceLoader.load(any()) }
     }
@@ -239,11 +239,23 @@ class GalleryViewModelTests {
       coEvery { typefaceLoader.load(any()) } returns null
       val vm = viewModel()
 
-      vm.postAction(GalleryAction.PreviewRequested(Fonts.roboto))
-      vm.postAction(GalleryAction.PreviewRequested(Fonts.roboto))
+      vm.postAction(GalleryAction.PreviewRequested(listOf(Fonts.roboto)))
+      vm.postAction(GalleryAction.PreviewRequested(listOf(Fonts.roboto)))
 
       coVerify(exactly = 2) { typefaceLoader.load(any()) }
       vm.stateFlow.value.typefaces shouldBeEqualTo emptyMap()
+    }
+
+  @Test
+  fun `a window of rows is requested in one pass`() =
+    runTest {
+      coEvery { typefaceLoader.load(any()) } answers { mockk<Typeface>() }
+      val vm = viewModel()
+
+      vm.postAction(GalleryAction.PreviewRequested(listOf(Fonts.roboto, Fonts.openSans)))
+
+      vm.stateFlow.value.typefaces.keys shouldBeEqualTo setOf("Roboto", "Open Sans")
+      coVerify(exactly = 2) { typefaceLoader.load(any()) }
     }
 
   @Test
@@ -251,7 +263,7 @@ class GalleryViewModelTests {
     runTest {
       val vm = viewModel()
 
-      vm.postAction(GalleryAction.PreviewRequested(Fonts.font("Empty", variants = emptyList(), files = emptyMap())))
+      vm.postAction(GalleryAction.PreviewRequested(listOf(Fonts.font("Empty", variants = emptyList(), files = emptyMap()))))
 
       coVerify(exactly = 0) { typefaceLoader.load(any()) }
     }

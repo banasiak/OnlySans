@@ -64,6 +64,16 @@ android {
   }
 }
 
+composeCompiler {
+  // `./gradlew :app:assembleRelease -PcomposeMetrics` writes the stability and skippability report
+  // that the file below was derived from; app-composables.txt is the one worth reading.
+  if (providers.gradleProperty("composeMetrics").isPresent) {
+    reportsDestination = layout.buildDirectory.dir("compose_reports")
+    metricsDestination = layout.buildDirectory.dir("compose_metrics")
+  }
+  stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_stability.conf"))
+}
+
 kotlin {
   compilerOptions {
     jvmTarget = JvmTarget.JVM_17

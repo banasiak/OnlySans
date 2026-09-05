@@ -3,6 +3,7 @@ package app.onlysans.android.gallery
 import android.graphics.Typeface
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import app.onlysans.android.data.Font
 import app.onlysans.android.data.FontCategory
 import app.onlysans.android.data.SortOrder
@@ -10,6 +11,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Immutable
 data class GalleryState(
   /**
    * The catalog after the query, categories and favorites filter have been applied -- what the
@@ -55,7 +57,7 @@ data class GalleryState(
 
 sealed class GalleryAction {
   data object Load : GalleryAction()
-  data class PreviewRequested(val font: Font) : GalleryAction()
+  data class PreviewRequested(val fonts: List<Font>) : GalleryAction()
   data class QueryChanged(val query: String) : GalleryAction()
   data class SortSelected(val sort: SortOrder) : GalleryAction()
   data class TapCategory(val category: FontCategory) : GalleryAction()

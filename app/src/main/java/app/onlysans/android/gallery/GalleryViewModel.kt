@@ -80,7 +80,7 @@ class GalleryViewModel @Inject constructor(
         viewModelScope.launch { loadFonts() }
       }
       is GalleryAction.PreviewRequested -> {
-        onPreviewRequested(action.font)
+        action.fonts.forEach(::onPreviewRequested)
       }
       is GalleryAction.QueryChanged -> {
         onQueryChanged(action.query)

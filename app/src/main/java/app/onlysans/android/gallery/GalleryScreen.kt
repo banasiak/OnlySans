@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -50,6 +51,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -70,6 +72,10 @@ import app.onlysans.android.ui.fontFamilyOf
 import app.onlysans.android.ui.sharedFamilyName
 import app.onlysans.android.ui.theme.AppTheme
 import app.onlysans.android.ui.theme.Dimen
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
 @Composable
@@ -240,9 +246,32 @@ private fun CategoryChips(selected: Set<FontCategory>, onTap: (FontCategory) -> 
   }
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 private fun FontList(state: GalleryState, padding: PaddingValues, postAction: (GalleryAction) -> Unit) {
+  val listState = rememberLazyListState()
+
+  // Faces are asked for from here rather than from each row, and only once the list has stopped
+  // moving. A row that asks on the way past queues a download it will not be on screen to use: the
+  // loader runs four at a time, so flinging three hundred rows leaves the ones actually landed on
+  // waiting behind three hundred it has already left. Debouncing means nothing is queued mid-fling,
+  // and what is queued is a window around where the reader stopped -- reaching past both edges, so
+  // the next rows in either direction are already resolved by the time they arrive.
+  LaunchedEffect(listState, state.fonts) {
+    snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+      .map { visible -> visible.firstOrNull()?.index to visible.lastOrNull()?.index }
+      .distinctUntilChanged()
+      .debounce(SETTLE_MS)
+      .collect { (first, last) ->
+        if (first == null || last == null) return@collect
+        val from = (first - PREFETCH_ROWS).coerceAtLeast(0)
+        val to = (last + PREFETCH_ROWS).coerceAtMost(state.fonts.lastIndex)
+        if (from <= to) postAction(GalleryAction.PreviewRequested(state.fonts.subList(from, to + 1)))
+      }
+  }
+
   LazyColumn(
+    state = listState,
     contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
     modifier = Modifier.fillMaxSize()
   ) {
@@ -260,10 +289,6 @@ private fun FontList(state: GalleryState, padding: PaddingValues, postAction: (G
 
 @Composable
 private fun FontRow(font: Font, typeface: Typeface?, favorite: Boolean, postAction: (GalleryAction) -> Unit) {
-  // asking here rather than in the ViewModel's filter pass is what keeps the downloads to the rows
-  // actually on screen: LazyColumn only composes those
-  LaunchedEffect(font.family) { postAction(GalleryAction.PreviewRequested(font)) }
-
   // the name is legible in the platform default from the first frame and settles into its own
   // letters when they arrive; fading the swap keeps a screenful of them from snapping at once
   val alpha by animateFloatAsState(if (typeface == null) UNRESOLVED_ALPHA else 1f, label = "typeface")
@@ -338,6 +363,12 @@ private fun EmptyMessage(state: GalleryState) {
 
 /** How faint a family name is while its own letters are still downloading. */
 private const val UNRESOLVED_ALPHA = 0.38f
+
+/** How long the list has to hold still before its faces are worth asking for. */
+private const val SETTLE_MS = 120L
+
+/** How far past each edge of the visible window to fetch, so a short scroll lands on resolved rows. */
+private const val PREFETCH_ROWS = 8
 
 @PreviewLightDark
 @Composable

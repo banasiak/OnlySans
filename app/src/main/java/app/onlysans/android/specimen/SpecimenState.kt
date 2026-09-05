@@ -3,6 +3,7 @@ package app.onlysans.android.specimen
 import android.graphics.Typeface
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import app.onlysans.android.R
 import app.onlysans.android.data.Font
 import app.onlysans.android.data.FontVariant
@@ -11,6 +12,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+@Immutable
 data class SpecimenState(
   val family: String = "",
   /** Not parcelled: re-read from the repository by [family], which is. */
