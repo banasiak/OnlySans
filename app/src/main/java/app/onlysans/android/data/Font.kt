@@ -1,10 +1,12 @@
 package app.onlysans.android.data
 
+import androidx.compose.runtime.Immutable
 import app.onlysans.android.api.serializer.LocalDateSerializer
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
 @Serializable
+@Immutable
 data class Font(
   val family: String,
   val variants: List<String> = emptyList(),
