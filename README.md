@@ -19,7 +19,8 @@ fontsApiKey=YOUR_KEY_HERE
 Then:
 
 ```bash
-./gradlew :app:installDebug
+./gradlew :app:assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 The key is optional at build time — without it the app compiles and tells you on screen what is

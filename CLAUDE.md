@@ -12,7 +12,7 @@ name is built on. Single-module (`app`), Kotlin, Compose, published nowhere and 
 
 ```bash
 ./gradlew :app:assembleDebug                # build debug APK
-./gradlew :app:installDebug                 # build and install on a connected device
+adb install -r app/build/outputs/apk/debug/app-debug.apk   # install the APK built above
 ./gradlew :app:test                         # all unit tests (JUnit 5 / JUnit Platform)
 ./gradlew :app:testDebugUnitTest --tests "app.onlysans.android.data.FontTests"   # one class
 ./gradlew :app:ktlintCheck                  # code style (runs as part of `check`)
@@ -21,6 +21,12 @@ name is built on. Single-module (`app`), Kotlin, Compose, published nowhere and 
 ./gradlew :app:koverHtmlReportDebug         # coverage -> app/build/reports/kover/htmlDebug/index.html
 ./gradlew :app:assembleRelease -PcomposeMetrics   # + the Compose stability report (see below)
 ```
+
+Install in two steps, never with `installDebug`: separating the build from the transfer keeps a
+stalled USB write from reading as a Gradle failure. Where adb reaches the phone over WSL2's USB/IP
+passthrough, cap the transfer with `timeout -k 5 60 adb install -r …` and retry, since a wedged adb
+ignores `SIGTERM`. Before trusting device behaviour, confirm the build landed:
+`adb shell dumpsys package app.onlysans.android | grep lastUpdateTime` against the APK's mtime.
 
 A Google Fonts API key belongs in `local.properties` as `fontsApiKey=…` (quotes optional, stripped
 either way). It is optional at build time: without one the app compiles and reports the missing key
