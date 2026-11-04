@@ -10,7 +10,6 @@ import app.onlysans.android.data.Font
 import app.onlysans.android.data.FontCategory
 import app.onlysans.android.data.FontRepository
 import app.onlysans.android.data.SettingsStore
-import app.onlysans.android.data.SortOrder
 import app.onlysans.android.extensions.restore
 import app.onlysans.android.extensions.save
 import app.onlysans.android.typeface.TypefaceLoader
